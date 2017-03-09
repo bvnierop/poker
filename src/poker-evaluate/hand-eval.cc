@@ -6,7 +6,7 @@
 namespace poker {
     bool is_value_char(const char& c) 
     {
-        static const std::string values("23456789TJQKAtjkqa");
+        static const std::string values("23456789TJQKAtjqka");
         return values.find(c) != values.npos;
     }
     
@@ -91,9 +91,14 @@ namespace poker {
 
         uint64_t face = faces[(int)description[1] - 'A'];
         uint64_t value = values[(int)description[0] - '0'];
+        bool is_ace = value == to_integral(Value::Ace);
+        uint64_t ace_mask = 1 << face;
 
-        return (1ull << face) << 
+        uint64_t card = (1ull << face) <<
             (value << 2);
-    }
 
+        // Conditionally set ace_mask, when is_ace is true.
+        return (card & ~ace_mask) | (-is_ace & ace_mask);
+    }
 }
+

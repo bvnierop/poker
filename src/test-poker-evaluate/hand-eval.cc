@@ -18,20 +18,28 @@ using namespace poker;
 /*     } */
 /* } */
 
-// So I really have to test parsing a hand, first...
+// TODO: move parse tests and functions to their own files
 Describe("parse hand") {
     It("parses one card") {
         BitCard card = parse_card("4s");
-        Expect(card == 0b1000000000000000);
+        Expect(card == 0x8000ull);
         Expect(card_value(card) == Value::Four);
         Expect(card_face(card) == Face::Spades);
     }
 
     It("parses another card") {
         BitCard card = parse_card("Th");
-        Expect(card == 0b0001000000000000000000000000000000000000ull);
+        Expect(card == 0x1000000000ull);
         Expect(card_value(card) == Value::Ten);
         Expect(card_face(card) == Face::Hearts);
+    }
+
+    It("has an extra bit for an ace") {
+        BitCard card = parse_card("Ah");
+        Expect(card == 0x10000000000001ull);
+
+        card = parse_card("As");
+        Expect(card == 0x80000000000008ull);
     }
 
     It("parses multiple cards") {
