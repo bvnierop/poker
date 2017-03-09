@@ -33,4 +33,9 @@ Describe("parse hand") {
         Expect(card_value(card) == Value::Ten);
         Expect(card_face(card) == Face::Hearts);
     }
+
+    It("parses multiple cards") {
+        BitHand hand = parse_hand("2c 2h");
+        Expect(hand == 0b00110000);
+    }
 }

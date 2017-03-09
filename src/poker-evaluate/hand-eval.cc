@@ -1,27 +1,33 @@
 #include "hand-eval.h"
 
-#include <sstream>
 #include <vector>
+#include <string>
 
 namespace poker {
+    bool is_value_char(const char& c) 
+    {
+        static const std::string values("23456789TJQKAtjkqa");
+        return values.find(c) != values.npos;
+    }
+    
+    bool is_face_char(const char &c)
+    {
+        static const std::string faces("hcdsHCDS");
+        return faces.find(c) != faces.npos;
+    }
+
     BitHand parse_hand(const std::string &description)
     {
-        // make tokens
-        std::stringstream ss;
-        ss << description;
-        std::string token;
-        std::vector<std::string> tokens;
-        while (std::getline(ss, token, ' '))
-            tokens.push_back(std::move(token));
+        BitHand hand = 0;
+        for (size_t i = 0; i < description.size(); ++i) {
+            char a = description[i];
+            char b = description[i+1];
+            if (is_value_char(a) && is_face_char(b))  {
+                hand |= parse_card(description.substr(i, 2));
+            }
+        }
 
-        // parse each token to a card
-        
-        
-        // Form a hand
-        
-
-        // Return i
-        return 0;
+        return hand;
     }
 
     BitValue evaluate_hand(BitHand hand)
@@ -90,15 +96,4 @@ namespace poker {
             (value << 2);
     }
 
-    Value card_value(BitCard card)
-    {
-        // Index of most significant bit, divided by 4.
-        return to_enum<Value>((bsr(card) >> 2));
-    }
-
-    Face card_face(BitCard card)
-    {
-        // Index of most significant bit, modulo 3
-        return to_enum<Face>(bsr(card) & 0x3);
-    }
 }
