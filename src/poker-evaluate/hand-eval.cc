@@ -4,13 +4,13 @@
 #include <string>
 
 namespace poker {
-    bool is_value_char(const char& c) 
+    inline __fastcall bool is_value_char(const char& c) 
     {
         static const std::string values("23456789TJQKAtjqka");
         return values.find(c) != values.npos;
     }
     
-    bool is_suit_char(const char &c)
+    inline __fastcall bool is_suit_char(const char &c)
     {
         static const std::string suits("hcdsHCDS");
         return suits.find(c) != suits.npos;

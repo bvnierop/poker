@@ -19,6 +19,7 @@ using namespace poker;
 /* } */
 
 
+// TODO: Move rank disection to its own file
 Describe("parsing a hand value") {
     /*
         A hand value is represented by bits. The thirteen lowest bits
