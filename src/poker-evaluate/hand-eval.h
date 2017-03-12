@@ -35,11 +35,18 @@ namespace poker
 
     enum class Rank: uint64_t
     {
-        None,
-        Pair
+        HighCard = 0x0,
+        OnePair = 0x1,
+        TwoPair = 0x2,
+        ThreeOfAKind = 0x3,
+        Straight = 0x4,
+        Flush = 0x5,
+        FullHouse = 0x6,
+        FourOfAKind = 0x7,
+        StraightFlush = 0x8,
     };
 
-    enum class Face: uint64_t
+    enum class Suit: uint64_t
     {
         Hearts = 0x0,
         Clubs = 0x1,
@@ -47,7 +54,7 @@ namespace poker
         Spades = 0x3
     };
 
-    enum class Value: uint64_t
+    enum class FaceValue: uint64_t
     {
         Two = 0x1, 
         Three = 0x2,
@@ -65,31 +72,66 @@ namespace poker
     };
 
     ///////////////////////////////////////////////////////////////////////////
+    // Constants
+    ///////////////////////////////////////////////////////////////////////////
+    static constexpr uint64_t RankOffset = 13+13+4;
+    static constexpr uint64_t MajorCardOffset = 13;
+    static constexpr uint64_t SuitOffset = 26;
+    static constexpr uint64_t RankFaceValuesMask = 0b1111111111111;
+
+    ///////////////////////////////////////////////////////////////////////////
     // Function declarations
     ///////////////////////////////////////////////////////////////////////////
     bool is_value_char(const char& c);
-    bool is_face_char(const char &c);
-
+    bool is_suit_char(const char &c);
 
     BitHand parse_hand(const std::string &description);
     BitCard parse_card(const std::string &description);
 
     BitValue evaluate_hand(BitHand hand);
+
     Rank rank(BitValue value);
+    FaceValue major_card(BitValue value, int index = 0);
+    uint64_t major_card_count(BitValue value);
+    FaceValue minor_card(BitValue value, int index = 0);
+    uint64_t minor_card_count(BitValue value);
+    Suit value_suit(BitValue value);
 
     ///////////////////////////////////////////////////////////////////////////
     // Inline functions
     ///////////////////////////////////////////////////////////////////////////
-    inline __fastcall Value card_value(BitCard card)
+    inline __fastcall FaceValue card_value(BitCard card)
     {
         // Index of most significant bit, divided by 4.
-        return to_enum<Value>(bsr(card) >> 2);
+        return to_enum<FaceValue>(bsr(card) >> 2);
     }
 
-    inline __fastcall Face card_face(BitCard card)
+    inline __fastcall Suit card_suit(BitCard card)
     {
         // Index of most significant bit, modulo 3
-        return to_enum<Face>(bsr(card) & 0x3);
+        return to_enum<Suit>(bsr(card) & 0x3);
+    }
+
+    inline __fastcall uint64_t _card_count(BitValue value)
+    {
+        uint64_t cards = value & RankFaceValuesMask;
+        uint64_t count = 0;
+        while (cards) {
+            cards &= ~(1ull << bsr(cards));
+            ++count;
+        }
+        return count;
+    }
+
+    inline __fastcall FaceValue _card(BitValue value, int index)
+    {
+        uint64_t cards = value & RankFaceValuesMask;
+        uint64_t current_card = 0;
+        do {
+            current_card = (1ull << bsr(cards));
+            cards &= ~current_card;
+        } while (index--);
+        return to_enum<FaceValue>(bsr(current_card) + 1);
     }
 }
 
