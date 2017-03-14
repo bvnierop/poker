@@ -3,7 +3,17 @@
 #include <vector>
 #include <string>
 
+#include <iostream>
+
 namespace poker {
+    void print_bits(uint64_t bits) {
+        for (int i = 63; i >= 0; --i) {
+            std::cout << ((bits & (1ull << i)) >> i);
+            if (!(i%4)) std::cout << " ";
+        }
+        std::cout << std::endl;
+    }
+
     inline __fastcall bool is_value_char(const char& c) 
     {
         static const std::string values("23456789TJQKAtjqka");
@@ -32,7 +42,20 @@ namespace poker {
 
     BitValue evaluate_hand(BitHand hand)
     {
-        return 0;
+        BitValue value = 0;
+
+        uint64_t counts = hand;
+        counts = ((counts >> 1) & 0x5555555555555555ull) + (counts & 0x5555555555555555ull);
+        counts = ((counts >> 2) & 0x3333333333333333ull) + (counts & 0x3333333333333333ull);
+
+        uint64_t quads = counts & 0x4444444444444444ull;
+        if (quads) {
+            value |= (1ull << to_integral(Rank::FourOfAKind)) << RankOffset;
+            value |= (1ull << ((bsr(quads) >> 2) - 1)) << MajorCardOffset;
+            value |= 1ull << ((bsr(counts & ~quads) >> 2) - 1);
+        }
+
+        return value;
     }
 
     Rank rank(BitValue value)

@@ -4,19 +4,26 @@
 
 using namespace poker;
 
-/* Describe("hand eval") { */
-/*     Context("detect pair") { */
-/*         It("recognizes a pair") { */
-/*             BitHand hand = parse_hand("Ac Ah 2s 4h 6c 8d Ts"); */
-/*             BitValue value = evaluate_hand(hand); */
-/*             Expect(rank(value) == Rank::Pair); */
-/*             // expect aces to be the paired card */
-/*         } */
+Describe("hand eval") {
+    It("detects a four of a kind") {
+        BitHand hand = parse_hand("Kh Kc Kd Ks Ac 2h 7c");
+        BitValue value = evaluate_hand(hand);
+        Expect(rank(value) == Rank::FourOfAKind);
+        Expect(major_card(value) == FaceValue::King);
+        Expect(minor_card(value) == FaceValue::Ace);
+    }
+    /* Context("detect pair") { */
+    /*     It("recognizes a pair") { */
+    /*         BitHand hand = parse_hand("Ac Ah 2s 4h 6c 8d Ts"); */
+    /*         BitValue value = evaluate_hand(hand); */
+    /*         Expect(rank(value) == Rank::Pair); */
+    /*         // expect aces to be the paired card */
+    /*     } */
 
-/*         It("recognizes kickers") { */
-/*         } */
-/*     } */
-/* } */
+    /*     It("recognizes kickers") { */
+    /*     } */
+    /* } */
+}
 
 
 // TODO: Move rank disection to its own file
