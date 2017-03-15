@@ -63,6 +63,17 @@ namespace poker {
             value |= 1ull << ((bsr(countidx & ~quads) >> 2) - 1);
         }
 
+        uint64_t triplets = countidx & 0x4444444444444444ull;
+        if (triplets) {
+            value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; // duplication, use a function
+            value |= (1ull << ((bsr(triplets) >> 2) - 1)) << MajorCardOffset;
+            uint64_t kickers = countidx;
+            for (int i = 0; i < 2; ++i) {
+                value |= 1ull << ((bsr(kickers & ~triplets) >> 2) - 1);
+                kickers &= ~(1ull << bsr(kickers));
+            }
+        }
+
         return value;
     }
 
