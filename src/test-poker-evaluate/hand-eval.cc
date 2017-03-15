@@ -12,17 +12,19 @@ Describe("hand eval") {
         Expect(major_card(value) == FaceValue::King);
         Expect(minor_card(value) == FaceValue::Ace);
     }
-    /* Context("detect pair") { */
-    /*     It("recognizes a pair") { */
-    /*         BitHand hand = parse_hand("Ac Ah 2s 4h 6c 8d Ts"); */
-    /*         BitValue value = evaluate_hand(hand); */
-    /*         Expect(rank(value) == Rank::Pair); */
-    /*         // expect aces to be the paired card */
-    /*     } */
 
-    /*     It("recognizes kickers") { */
-    /*     } */
-    /* } */
+}
+
+Describe("MSB / LSB") {
+    It("gets the most significant bit") {
+        Expect(bsr(0b001010) == 3);
+        Expect(bsr(0xFFFFFFFFFFFFFFFF) == 63);
+    }
+
+    It("gets the least significant bit") {
+        Expect(bsl(0b001010) == 1);
+        Expect(bsl(0x8000000000000000) == 63);
+    }
 }
 
 
