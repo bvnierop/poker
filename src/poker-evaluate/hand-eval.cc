@@ -44,15 +44,23 @@ namespace poker {
     {
         BitValue value = 0;
 
-        uint64_t counts = hand;
-        counts = ((counts >> 1) & 0x5555555555555555ull) + (counts & 0x5555555555555555ull);
-        counts = ((counts >> 2) & 0x3333333333333333ull) + (counts & 0x3333333333333333ull);
+        uint64_t countidx = 0;
+        for (uint64_t temp = hand; temp; temp &= (temp - 1)) {
+            uint64_t offset = (bsl(temp) >> 2) << 2; // offset of the nibble
+            uint64_t nibble = (countidx >> offset) & 0xFull; // zero out everything but the nibble
+            nibble <<= 1; // increment the amount of cards in the nibble
+            bool zero = nibble == 0;
+            nibble = (nibble & ~0x1) | (-zero & 0x1); // if the nibble is zero, set it to 1, because incrementing zero doesn't
+                                                      // doesn't do anything
+            countidx &= (0xFFFFFFFFFFFFFFFFull ^ (0xFull << offset)); // set the nibble at the correct offset to all zeroes
+            countidx |= nibble << offset; // place the nibble back
+        }
 
-        uint64_t quads = counts & 0x4444444444444444ull;
+        uint64_t quads = countidx & 0x8888888888888888ull;
         if (quads) {
             value |= (1ull << to_integral(Rank::FourOfAKind)) << RankOffset;
             value |= (1ull << ((bsr(quads) >> 2) - 1)) << MajorCardOffset;
-            value |= 1ull << ((bsr(counts & ~quads) >> 2) - 1);
+            value |= 1ull << ((bsr(countidx & ~quads) >> 2) - 1);
         }
 
         return value;
