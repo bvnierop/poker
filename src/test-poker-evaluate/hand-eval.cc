@@ -23,17 +23,6 @@ Describe("hand eval") {
     }
 }
 
-Describe("MSB / LSB") {
-    It("gets the most significant bit") {
-        Expect(bsr(0b001010) == 3);
-        Expect(bsr(0xFFFFFFFFFFFFFFFF) == 63);
-    }
-
-    It("gets the least significant bit") {
-        Expect(bsl(0b001010) == 1);
-        Expect(bsl(0x8000000000000000) == 63);
-    }
-}
 
 
 // TODO: Move rank disection to its own file

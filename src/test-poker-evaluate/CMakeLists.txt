@@ -1,5 +1,6 @@
 SET(sources
     hand-eval.cc
+    bits.cc
 )
 
 IF(UNITY_BUILD)

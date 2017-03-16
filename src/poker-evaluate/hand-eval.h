@@ -4,25 +4,13 @@
 #include <cstdint>
 #include <string>
 
+#include "bits.h"
+
 namespace poker 
 {
     ///////////////////////////////////////////////////////////////////////////
     // Utilities. TODO: move!
     ///////////////////////////////////////////////////////////////////////////
-    inline uint64_t __fastcall bsr(const uint64_t &number)
-    {
-        uint64_t position = 0;
-        asm("bsrq %1, %0" : "=r" (position) : "r" (number));
-        return position;
-    }
-
-    inline uint64_t __fastcall bsl(const uint64_t &number)
-    {
-        uint64_t position = 0;
-        asm("bsf %1, %0" : "=r" (position) : "r" (number));
-        return position;
-    }
-
     template<typename E> constexpr auto to_integral(E e) -> typename std::underlying_type<E>::type 
     {
         return static_cast<typename std::underlying_type<E>::type>(e);
