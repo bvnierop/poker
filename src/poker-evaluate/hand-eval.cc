@@ -40,38 +40,60 @@ namespace poker {
         return hand;
     }
 
+    inline __fastcall uint64_t create_count_indices(BitHand hand)
+    {
+        uint64_t count_indices = 0;
+        for (uint64_t temp = hand; temp; temp &= (temp - 1)) {
+            uint64_t nibble_offset = (bsl(temp) >> 2) << 2; 
+
+            // zero out everything but the nibble and increment its index by shifting to the left
+            uint64_t nibble = ((count_indices >> nibble_offset) & 0xFull) << 1ull; 
+            bool nibble_is_zero = nibble == 0;
+
+            // if the nibble is zero, set it to 1, because shifting zero doesn't
+            // doesn't result in 0b0001
+            nibble = (nibble & ~0x1) | (-nibble_is_zero & 0x1); 
+
+            // reset the nibble in count_indices to zero
+            count_indices &= (0xFFFFFFFFFFFFFFFFull ^ (0xFull << nibble_offset)); 
+
+            // put the new nibble with incremented bit index in place
+            count_indices |= nibble << nibble_offset; 
+        }
+        return count_indices;
+    }
+
+    inline __fastcall BitValue add_kickers(BitValue value, uint64_t kickers, int amount)
+    {
+        for (int i = 0; i < amount; ++i) {
+            value |= 1ull << ((bsr(kickers) >> 2) - 1);
+            kickers &= ~(1ull << bsr(kickers));
+        }
+        return value;
+    }
+
     BitValue evaluate_hand(BitHand hand)
     {
         BitValue value = 0;
 
-        uint64_t countidx = 0;
-        for (uint64_t temp = hand; temp; temp &= (temp - 1)) {
-            uint64_t offset = (bsl(temp) >> 2) << 2; // offset of the nibble
-            uint64_t nibble = (countidx >> offset) & 0xFull; // zero out everything but the nibble
-            nibble <<= 1; // increment the amount of cards in the nibble
-            bool zero = nibble == 0;
-            nibble = (nibble & ~0x1) | (-zero & 0x1); // if the nibble is zero, set it to 1, because incrementing zero doesn't
-                                                      // doesn't do anything
-            countidx &= (0xFFFFFFFFFFFFFFFFull ^ (0xFull << offset)); // set the nibble at the correct offset to all zeroes
-            countidx |= nibble << offset; // place the nibble back
-        }
+        uint64_t count_indices = create_count_indices(hand);
 
-        uint64_t quads = countidx & 0x8888888888888888ull;
+        uint64_t quads = count_indices & 0x8888888888888888ull;
         if (quads) {
             value |= (1ull << to_integral(Rank::FourOfAKind)) << RankOffset;
             value |= (1ull << ((bsr(quads) >> 2) - 1)) << MajorCardOffset;
-            value |= 1ull << ((bsr(countidx & ~quads) >> 2) - 1);
+            value = add_kickers(value, count_indices & ~quads, 1);
         }
 
-        uint64_t triplets = countidx & 0x4444444444444444ull;
+        // This looks like duplication, but triplets can branch into
+        // Full House, while quads cannot. Since speed matters, we
+        // really don't want the additional assignment, AND and conditional
+        // that extracting a function would incur.
+        uint64_t triplets = count_indices & 0x4444444444444444ull;
         if (triplets) {
-            value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; // duplication, use a function
+            value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; 
             value |= (1ull << ((bsr(triplets) >> 2) - 1)) << MajorCardOffset;
-            uint64_t kickers = countidx;
-            for (int i = 0; i < 2; ++i) {
-                value |= 1ull << ((bsr(kickers & ~triplets) >> 2) - 1);
-                kickers &= ~(1ull << bsr(kickers));
-            }
+            value = add_kickers(value, count_indices & ~triplets, 2);
         }
 
         return value;
