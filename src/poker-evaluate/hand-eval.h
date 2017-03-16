@@ -80,12 +80,6 @@ namespace poker
 
     BitValue evaluate_hand(BitHand hand);
 
-    Rank rank(BitValue value);
-    FaceValue major_card(BitValue value, int index = 0);
-    uint64_t major_card_count(BitValue value);
-    FaceValue minor_card(BitValue value, int index = 0);
-    uint64_t minor_card_count(BitValue value);
-    Suit value_suit(BitValue value);
 
     ///////////////////////////////////////////////////////////////////////////
     // Inline functions
@@ -102,27 +96,6 @@ namespace poker
         return to_enum<Suit>(msb_index(card) & 0x3);
     }
 
-    inline __fastcall uint64_t _card_count(BitValue value)
-    {
-        uint64_t cards = value & RankFaceValuesMask;
-        uint64_t count = 0;
-        while (cards) {
-            cards &= cards - 1;
-            ++count;
-        }
-        return count;
-    }
-
-    inline __fastcall FaceValue _card(BitValue value, int index)
-    {
-        uint64_t cards = value & RankFaceValuesMask;
-        uint64_t current_card = 0;
-        do {
-            current_card = (1ull << msb_index(cards));
-            cards &= ~current_card;
-        } while (index--);
-        return to_enum<FaceValue>(msb_index(current_card) + 1);
-    }
 }
 
 #endif
