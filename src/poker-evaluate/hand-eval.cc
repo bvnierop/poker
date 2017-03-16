@@ -44,7 +44,7 @@ namespace poker {
     {
         uint64_t count_indices = 0;
         for (uint64_t temp = hand; temp; temp &= (temp - 1)) {
-            uint64_t nibble_offset = (bsl(temp) >> 2) << 2; 
+            uint64_t nibble_offset = (lsb_index(temp) >> 2) << 2; 
 
             // zero out everything but the nibble and increment its index by shifting to the left
             uint64_t nibble = ((count_indices >> nibble_offset) & 0xFull) << 1ull; 
@@ -66,8 +66,8 @@ namespace poker {
     inline __fastcall BitValue add_kickers(BitValue value, uint64_t kickers, int amount)
     {
         for (int i = 0; i < amount; ++i) {
-            value |= 1ull << ((bsr(kickers) >> 2) - 1);
-            kickers &= ~(1ull << bsr(kickers));
+            value |= 1ull << ((msb_index(kickers) >> 2) - 1);
+            kickers &= ~(1ull << msb_index(kickers));
         }
         return value;
     }
@@ -81,7 +81,7 @@ namespace poker {
         uint64_t quads = count_indices & 0x8888888888888888ull;
         if (quads) {
             value |= (1ull << to_integral(Rank::FourOfAKind)) << RankOffset;
-            value |= (1ull << ((bsr(quads) >> 2) - 1)) << MajorCardOffset;
+            value |= (1ull << ((msb_index(quads) >> 2) - 1)) << MajorCardOffset;
             value = add_kickers(value, count_indices & ~quads, 1);
         }
 
@@ -92,7 +92,7 @@ namespace poker {
         uint64_t triplets = count_indices & 0x4444444444444444ull;
         if (triplets) {
             value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; 
-            value |= (1ull << ((bsr(triplets) >> 2) - 1)) << MajorCardOffset;
+            value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
             value = add_kickers(value, count_indices & ~triplets, 2);
         }
 
@@ -101,7 +101,7 @@ namespace poker {
 
     Rank rank(BitValue value)
     {
-        return to_enum<Rank>(bsr(value >> RankOffset));
+        return to_enum<Rank>(msb_index(value >> RankOffset));
     }
 
     FaceValue major_card(BitValue value, int index)
@@ -126,7 +126,7 @@ namespace poker {
 
     Suit value_suit(BitValue value)
     {
-        return to_enum<Suit>(bsr((value >> SuitOffset) & 0xF));
+        return to_enum<Suit>(msb_index((value >> SuitOffset) & 0xF));
     }
 
     BitCard parse_card(const std::string &description)

@@ -98,13 +98,13 @@ namespace poker
     inline __fastcall FaceValue card_value(BitCard card)
     {
         // Index of most significant bit, divided by 4.
-        return to_enum<FaceValue>(bsr(card) >> 2);
+        return to_enum<FaceValue>(msb_index(card) >> 2);
     }
 
     inline __fastcall Suit card_suit(BitCard card)
     {
         // Index of most significant bit, modulo 3
-        return to_enum<Suit>(bsr(card) & 0x3);
+        return to_enum<Suit>(msb_index(card) & 0x3);
     }
 
     inline __fastcall uint64_t _card_count(BitValue value)
@@ -112,7 +112,7 @@ namespace poker
         uint64_t cards = value & RankFaceValuesMask;
         uint64_t count = 0;
         while (cards) {
-            cards &= ~(1ull << bsr(cards));
+            cards &= ~(1ull << msb_index(cards));
             ++count;
         }
         return count;
@@ -123,10 +123,10 @@ namespace poker
         uint64_t cards = value & RankFaceValuesMask;
         uint64_t current_card = 0;
         do {
-            current_card = (1ull << bsr(cards));
+            current_card = (1ull << msb_index(cards));
             cards &= ~current_card;
         } while (index--);
-        return to_enum<FaceValue>(bsr(current_card) + 1);
+        return to_enum<FaceValue>(msb_index(current_card) + 1);
     }
 }
 
