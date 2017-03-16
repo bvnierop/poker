@@ -16,5 +16,4 @@ Describe("MSB") {
         Expect(msb_index(0b001010) == 3);
         Expect(msb_index(0xFFFFFFFFFFFFFFFF) == 63);
     }
-
 }
