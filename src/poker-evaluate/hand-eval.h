@@ -102,16 +102,16 @@ namespace poker
         return to_enum<Suit>(msb_index(card) & 0x3);
     }
 
-    /* inline __fastcall uint64_t _card_count(BitValue value) */
-    /* { */
-    /*     uint64_t cards = value & RankFaceValuesMask; */
-    /*     uint64_t count = 0; */
-    /*     while (cards) { */
-    /*         cards &= ~(1ull << msb_index(cards)); */
-    /*         ++count; */
-    /*     } */
-    /*     return count; */
-    /* } */
+    inline __fastcall uint64_t _card_count(BitValue value)
+    {
+        uint64_t cards = value & RankFaceValuesMask;
+        uint64_t count = 0;
+        while (cards) {
+            cards &= cards - 1;
+            ++count;
+        }
+        return count;
+    }
 
     inline __fastcall FaceValue _card(BitValue value, int index)
     {

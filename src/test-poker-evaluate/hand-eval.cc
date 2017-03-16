@@ -24,8 +24,6 @@ Describe("hand eval") {
     }
 }
 
-
-
 // TODO: Move rank disection to its own file
 Describe("parsing a hand value") {
     /*
@@ -52,7 +50,6 @@ Describe("parsing a hand value") {
         being High Card, and the highest one being Straight Flush. A Royal 
         Flush is just an ace high Straight Flush.
     */
-
 
     It("Contains the rank") {
         BitValue highCardFaceValue = 0b1000000000000000000000000000000ull;
