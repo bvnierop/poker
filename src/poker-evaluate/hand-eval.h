@@ -77,25 +77,7 @@ namespace poker
     ///////////////////////////////////////////////////////////////////////////
     // Function declarations
     ///////////////////////////////////////////////////////////////////////////
-
     BitValue evaluate_hand(BitHand hand);
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Inline functions
-    ///////////////////////////////////////////////////////////////////////////
-    inline __fastcall FaceValue card_value(BitCard card)
-    {
-        // Index of most significant bit, divided by 4.
-        return to_enum<FaceValue>(msb_index(card) >> 2);
-    }
-
-    inline __fastcall Suit card_suit(BitCard card)
-    {
-        // Index of most significant bit, modulo 3
-        return to_enum<Suit>(msb_index(card) & 0x3);
-    }
-
 }
 
 #endif
