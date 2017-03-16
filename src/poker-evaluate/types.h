@@ -58,11 +58,6 @@ namespace poker {
         return static_cast<E>(i);
     }
 
-    static constexpr uint64_t RankOffset = 13+13+4;
-    static constexpr uint64_t MajorCardOffset = 13;
-    static constexpr uint64_t SuitOffset = 26;
-    static constexpr uint64_t RankFaceValuesMask = 0b1111111111111;
-
 }
 
 #endif // _TYPES_H_

@@ -2,8 +2,9 @@
 
 #include <vector>
 #include <string>
-
 #include <iostream>
+
+#include "hand-value.h"
 
 namespace poker {
     void print_bits(uint64_t bits) {
