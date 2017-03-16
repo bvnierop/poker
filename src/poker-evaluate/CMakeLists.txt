@@ -1,6 +1,7 @@
 SET(sources
     poker-evaluate.cc
     hand-eval.cc
+    hand-parse.cc
 )
 
 IF(UNITY_BUILD)
