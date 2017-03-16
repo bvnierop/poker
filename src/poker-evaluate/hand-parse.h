@@ -1,7 +1,10 @@
 #ifndef _HAND_PARSE_H_
 #define _HAND_PARSE_H_
 
-#include "hand-eval.h"
+#include <string>
+
+#include "bits.h"
+#include "types.h"
 
 namespace poker {
 

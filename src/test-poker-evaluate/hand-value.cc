@@ -1,6 +1,5 @@
 #include "../third-party/catch.hpp"
 #include "catch-rspec.hpp"
-#include "../poker-evaluate/hand-eval.h"
 #include "../poker-evaluate/hand-value.h"
 
 using namespace poker;

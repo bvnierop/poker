@@ -3,7 +3,8 @@
 
 #include <cstdint>
 
-#include "hand-eval.h"
+#include "bits.h"
+#include "types.h"
 
 namespace poker {
 
