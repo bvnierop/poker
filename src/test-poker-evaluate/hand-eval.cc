@@ -6,22 +6,37 @@
 
 using namespace poker;
 
+void ExpectHand(const std::string &handString,
+        Rank expectedRank,
+        FaceValue expectedMajor,
+        const std::vector<FaceValue> &expectedMinors)
+{
+    BitHand hand = parse_hand(handString);
+    BitValue value = evaluate_hand(hand);
+    Expect(rank(value) == expectedRank);
+    Expect(major_card(value) == expectedMajor);
+    for (size_t i = 0; i < expectedMinors.size(); ++i) {
+        Expect(minor_card(value, i) == expectedMinors[i]);
+    }
+}
+
 Describe("hand eval") {
     It("detects a four of a kind") {
-        BitHand hand = parse_hand("Kh Kc Kd Ks Ac 2h 7c");
-        BitValue value = evaluate_hand(hand);
-        Expect(rank(value) == Rank::FourOfAKind);
-        Expect(major_card(value) == FaceValue::King);
-        Expect(minor_card(value) == FaceValue::Ace);
+        ExpectHand("Kh Kc Kd Ks Ac 2h 7c", Rank::FourOfAKind,
+                FaceValue::King,
+                { FaceValue::Ace });
     }
 
     It("detects a three of a kind") {
-        BitHand hand = parse_hand("Kh Kc Kd Qs Ac 2h 7c");
-        BitValue value = evaluate_hand(hand);
-        Expect(rank(value) == Rank::ThreeOfAKind);
-        Expect(major_card(value) == FaceValue::King);
-        Expect(minor_card(value) == FaceValue::Ace);
-        Expect(minor_card(value, 1) == FaceValue::Queen);
+        ExpectHand("Kh Kc Kd Qs Ac 2h 7c", Rank::ThreeOfAKind,
+                FaceValue::King,
+                { FaceValue::Ace, FaceValue::Queen });
+    }
+
+    It("detects a pair") {
+        ExpectHand("Kh Kc 5d Qs Ac 2h 7c", Rank::OnePair,
+                FaceValue::King,
+                { FaceValue::Ace, FaceValue::Queen, FaceValue::Seven });
     }
 }
 
