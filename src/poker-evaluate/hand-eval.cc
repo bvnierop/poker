@@ -7,6 +7,7 @@
 #include "hand-value.h"
 
 namespace poker {
+    // TODO: move
     void print_bits(uint64_t bits) {
         for (int i = 63; i >= 0; --i) {
             std::cout << ((bits & (1ull << i)) >> i);
@@ -47,38 +48,53 @@ namespace poker {
         return value;
     }
 
+    inline __fastcall BitValue make_rank( Rank rank) {
+        return (1ull << to_integral(rank)) << RankOffset; 
+    }
+
+    inline __fastcall BitValue set_major_card(BitValue value, uint64_t filtered_hand) {
+        return value | (1ull << ((msb_index(filtered_hand) >> 2) - 1)) << MajorCardOffset;
+    }
+
+    inline __fastcall BitValue make_value(Rank rank, uint64_t filtered_hand, uint64_t kicker_base, int num_kickers)
+    {
+            BitValue value = make_rank(rank);
+            value = set_major_card(value, filtered_hand);
+            value = add_kickers(value, kicker_base, num_kickers);
+            return value;
+    }
+
+    inline __fastcall uint64_t remove_cards(uint64_t base, uint64_t to_remove)
+    {
+        return base & ~to_remove;
+    }
+
+    static constexpr uint64_t QuadMask = 0x8888888888888888ull;
+    static constexpr uint64_t TripletMask = 0x4444444444444444ull;
+    static constexpr uint64_t PairMask = 0x2222222222222222ull;
+
     BitValue evaluate_hand(BitHand hand)
     {
-        BitValue value = 0;
-
         uint64_t count_indices = create_count_indices(hand);
 
-        uint64_t quads = count_indices & 0x8888888888888888ull;
+        uint64_t quads = count_indices & QuadMask;
         if (quads) {
-            value |= (1ull << to_integral(Rank::FourOfAKind)) << RankOffset;
-            value |= (1ull << ((msb_index(quads) >> 2) - 1)) << MajorCardOffset;
-            value = add_kickers(value, count_indices & ~quads, 1);
+            return make_value(Rank::FourOfAKind, quads, remove_cards(count_indices, quads), 1);
         }
 
-        uint64_t triplets = count_indices & 0x4444444444444444ull;
-        uint64_t pairs = count_indices & 0x2222222222222222ull;
+        uint64_t triplets = count_indices & TripletMask;
+        uint64_t pairs = count_indices & PairMask;
         if (triplets) {
             if (pairs) {
-                value |= (1ull << to_integral(Rank::FullHouse)) << RankOffset; 
-                value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
-                value |= (1ull << ((msb_index(pairs) >> 2) - 1));
+                return make_value(Rank::FullHouse, triplets, pairs, 1);
             } else {
-                value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; 
-                value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
-                value = add_kickers(value, count_indices & ~triplets, 2);
+                return make_value(Rank::ThreeOfAKind, triplets, remove_cards(count_indices, triplets), 2);
             }
         } else if (pairs) {
-            value |= (1ull << to_integral(Rank::OnePair)) << RankOffset; 
-            value |= (1ull << ((msb_index(pairs) >> 2) - 1)) << MajorCardOffset;
-            value = add_kickers(value, count_indices & ~pairs, 3);
+            return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
         }
 
-        return value;
+        return 0;
     }
 
 }
