@@ -38,5 +38,10 @@ Describe("hand eval") {
                 FaceValue::King,
                 { FaceValue::Ace, FaceValue::Queen, FaceValue::Seven });
     }
+
+    It("detects a three of a kind/pair full house") {
+        ExpectHand("Kh Kc Kd As Ac 2h 7c", Rank::FullHouse,
+                FaceValue::King, { FaceValue::Ace });
+    }
 }
 

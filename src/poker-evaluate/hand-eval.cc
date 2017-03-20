@@ -60,23 +60,19 @@ namespace poker {
             value = add_kickers(value, count_indices & ~quads, 1);
         }
 
-        // This looks like duplication, but triplets can branch into
-        // Full House, while quads cannot. Since speed matters, we
-        // really don't want the additional assignment, AND and conditional
-        // that extracting a function would incur.
         uint64_t triplets = count_indices & 0x4444444444444444ull;
-        if (triplets) {
-            value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; 
-            value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
-            value = add_kickers(value, count_indices & ~triplets, 2);
-        }
-
-        // This looks like duplication, but pairs can branch into
-        // Full House, while quads cannot. Since speed matters, we
-        // really don't want the additional assignment, AND and conditional
-        // that extracting a function would incur.
         uint64_t pairs = count_indices & 0x2222222222222222ull;
-        if (pairs) {
+        if (triplets) {
+            if (pairs) {
+                value |= (1ull << to_integral(Rank::FullHouse)) << RankOffset; 
+                value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
+                value |= (1ull << ((msb_index(pairs) >> 2) - 1));
+            } else {
+                value |= (1ull << to_integral(Rank::ThreeOfAKind)) << RankOffset; 
+                value |= (1ull << ((msb_index(triplets) >> 2) - 1)) << MajorCardOffset;
+                value = add_kickers(value, count_indices & ~triplets, 2);
+            }
+        } else if (pairs) {
             value |= (1ull << to_integral(Rank::OnePair)) << RankOffset; 
             value |= (1ull << ((msb_index(pairs) >> 2) - 1)) << MajorCardOffset;
             value = add_kickers(value, count_indices & ~pairs, 3);
