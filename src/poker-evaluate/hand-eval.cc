@@ -93,6 +93,7 @@ namespace poker {
     static constexpr uint64_t TripletMask = 0x4444444444444440ull;
     static constexpr uint64_t PairMask = 0x2222222222222220ull;
     static constexpr uint64_t FlushMask = 0x1111111111111110ull;
+    static constexpr uint64_t StraightMask = 0x11111000000000ull;
 
     BitValue evaluate_hand(BitHand hand)
     {
@@ -135,9 +136,10 @@ namespace poker {
 
         uint64_t suitless_cards = collapse_hand(hand);
         for (int i = 0; i < 10; ++i) {
-            uint64_t straight = (suitless_cards << (i * 4)) & 0x11111000000000ull;
-            if (straight == 0x11111000000000ull) {
-                return make_value(Rank::Straight, straight >> (i * 4), straight, 0);
+            uint64_t mask = StraightMask >> (i * 4);
+            uint64_t straight = suitless_cards & mask;
+            if (straight == mask) {
+                return make_value(Rank::Straight, straight, straight, 0);
             }
         }
 
