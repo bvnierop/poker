@@ -81,6 +81,13 @@ namespace poker {
         return ((card_mask + (card_mask >> 4) & 0x0F0F0F0F0F0F0F0Full) * 0x0101010101010101ull) >> 56;
     }
 
+    inline __fastcall uint64_t collapse_hand(BitHand hand)
+    {
+        hand |= hand >> 1;
+        hand |= hand >> 2;
+        return hand & 0x1111111111111111ull;
+    }
+
     // note the trailing 0. We zero out the low bits of aces here. 
     static constexpr uint64_t QuadMask = 0x8888888888888880ull;
     static constexpr uint64_t TripletMask = 0x4444444444444440ull;
@@ -123,6 +130,14 @@ namespace poker {
             uint64_t flush = hand & FlushMask * (1 << i); 
             if (count_cards(flush) >= 5) {
                 return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
+            }
+        }
+
+        uint64_t suitless_cards = collapse_hand(hand);
+        for (int i = 0; i < 10; ++i) {
+            uint64_t straight = (suitless_cards << (i * 4)) & 0x11111000000000ull;
+            if (straight == 0x11111000000000ull) {
+                return make_value(Rank::Straight, straight >> (i * 4), straight, 0);
             }
         }
 

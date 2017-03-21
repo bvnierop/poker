@@ -88,5 +88,20 @@ Describe("hand eval") {
             FaceValue::Ace,
             { FaceValue::King, FaceValue::Nine, FaceValue::Eight, FaceValue::Five });
     }
+
+    It("detects a straight") {
+        ExpectHand("Kh Qc Jd Ts 9h 7c 2d", Rank::Straight,
+                FaceValue::King, {});
+    }
+
+    It("detects the highest straight") {
+        ExpectHand("Ah Kc Qd Js Th 9c 2d", Rank::Straight,
+                FaceValue::Ace, {});
+    }
+
+    It("detects an ace low straight") {
+        ExpectHand("Ah 2c 3d 4s 5h 9c Td", Rank::Straight,
+                FaceValue::Five, {});
+    }
 }
 
