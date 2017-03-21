@@ -88,7 +88,12 @@ namespace poker {
             if (pairs) {
                 return make_value(Rank::FullHouse, triplets, pairs, 1);
             } else {
-                return make_value(Rank::ThreeOfAKind, triplets, remove_cards(count_indices, triplets), 2);
+                uint64_t next_triplets = remove_cards(triplets, 1ull << msb_index(triplets));
+                if (next_triplets) {
+                    return make_value(Rank::FullHouse, triplets, next_triplets, 1);
+                } else {
+                    return make_value(Rank::ThreeOfAKind, triplets, remove_cards(count_indices, triplets), 2);
+                }
             }
         } else if (pairs) {
             return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);

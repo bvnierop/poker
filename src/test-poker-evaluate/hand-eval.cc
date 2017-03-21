@@ -43,5 +43,10 @@ Describe("hand eval") {
         ExpectHand("Kh Kc Kd As Ac 2h 7c", Rank::FullHouse,
                 FaceValue::King, { FaceValue::Ace });
     }
+
+    It("detects a double three of a kind full house") {
+        ExpectHand("Kh Kc Kd Qs Qc Qh 7c", Rank::FullHouse,
+                FaceValue::King, { FaceValue::Queen });
+    }
 }
 
