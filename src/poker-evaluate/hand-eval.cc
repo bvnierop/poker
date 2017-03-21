@@ -104,6 +104,22 @@ namespace poker {
             return make_value(Rank::FourOfAKind, quads, remove_cards(count_indices, quads), 1);
         }
 
+        for (int i = 0; i < 4; ++i) {
+            uint64_t flush = hand & FlushMask * (1 << i); 
+            if (count_cards(flush) >= 5) {
+                return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
+            }
+        }
+
+        uint64_t suitless_cards = collapse_hand(hand);
+        for (int i = 0; i < 10; ++i) {
+            uint64_t mask = StraightMask >> (i * 4);
+            uint64_t straight = suitless_cards & mask;
+            if (straight == mask) {
+                return make_value(Rank::Straight, straight, straight, 0);
+            }
+        }
+
         uint64_t triplets = count_indices & TripletMask;
         uint64_t pairs = count_indices & PairMask;
         if (triplets) {
@@ -124,22 +140,6 @@ namespace poker {
                         next_pairs);
             } else {
                 return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
-            }
-        }
-
-        for (int i = 0; i < 4; ++i) {
-            uint64_t flush = hand & FlushMask * (1 << i); 
-            if (count_cards(flush) >= 5) {
-                return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
-            }
-        }
-
-        uint64_t suitless_cards = collapse_hand(hand);
-        for (int i = 0; i < 10; ++i) {
-            uint64_t mask = StraightMask >> (i * 4);
-            uint64_t straight = suitless_cards & mask;
-            if (straight == mask) {
-                return make_value(Rank::Straight, straight, straight, 0);
             }
         }
 

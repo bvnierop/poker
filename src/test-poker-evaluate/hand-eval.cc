@@ -89,6 +89,12 @@ Describe("hand eval") {
             { FaceValue::King, FaceValue::Nine, FaceValue::Eight, FaceValue::Five });
     }
 
+    It("detects a flush over a three of a kind") {
+        ExpectHand("As Ks 9s 8s 5s Ah Ad", Rank::Flush,
+            FaceValue::Ace,
+            { FaceValue::King, FaceValue::Nine, FaceValue::Eight, FaceValue::Five });
+    }
+
     It("detects a straight") {
         ExpectHand("Kh Qc Jd Ts 9h 7c 2d", Rank::Straight,
                 FaceValue::King, {});
@@ -101,6 +107,11 @@ Describe("hand eval") {
 
     It("detects an ace low straight") {
         ExpectHand("Ah 2c 3d 4s 5h 9c Td", Rank::Straight,
+                FaceValue::Five, {});
+    }
+
+    It("detects a straight over a three of a kind") {
+        ExpectHand("Ah 2c 3d 4s 5h Ac Ad", Rank::Straight,
                 FaceValue::Five, {});
     }
 }
