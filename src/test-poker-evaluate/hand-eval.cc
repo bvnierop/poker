@@ -70,5 +70,17 @@ Describe("hand eval") {
                 { FaceValue::King, FaceValue::Queen },
                 { FaceValue::Seven });
     }
+
+    It("detects a flush") {
+        ExpectHand("Ah Kh 9h 8h 5h 3s 2s", Rank::Flush,
+            FaceValue::Ace,
+            { FaceValue::King, FaceValue::Nine, FaceValue::Eight, FaceValue::Five });
+    }
+
+    It("detects a spade flush") {
+        ExpectHand("As Ks 9s 8s 5s 3h 2h", Rank::Flush,
+            FaceValue::Ace,
+            { FaceValue::King, FaceValue::Nine, FaceValue::Eight, FaceValue::Five });
+    }
 }
 

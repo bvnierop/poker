@@ -69,14 +69,23 @@ namespace poker {
         return base & ~to_remove;
     }
 
-    inline __fastcall uint64_t remove_highest_count_index(uint64_t count_indices)
+    inline __fastcall uint64_t remove_highest_card(uint64_t count_indices)
     {
         return remove_cards(count_indices, 1ull << msb_index(count_indices));
+    }
+    
+    inline __fastcall uint64_t count_cards(uint64_t card_mask) 
+    {
+        card_mask = card_mask - ((card_mask >> 1) & 0x5555555555555555ull);
+        card_mask = (card_mask & 0x3333333333333333ull) + ((card_mask >> 2) & 0x3333333333333333ull);
+        return ((card_mask + (card_mask >> 4) & 0x0F0F0F0F0F0F0F0Full) * 0x0101010101010101ull) >> 56;
     }
 
     static constexpr uint64_t QuadMask = 0x8888888888888888ull;
     static constexpr uint64_t TripletMask = 0x4444444444444444ull;
     static constexpr uint64_t PairMask = 0x2222222222222222ull;
+    // note the trailing 0. We zero out the low bits of aces here. 
+    static constexpr uint64_t FlushMask = 0x1111111111111110ull;
 
     BitValue evaluate_hand(BitHand hand)
     {
@@ -93,7 +102,7 @@ namespace poker {
             if (pairs) {
                 return make_value(Rank::FullHouse, triplets, pairs, 1);
             } else {
-                uint64_t next_triplets = remove_highest_count_index(triplets);
+                uint64_t next_triplets = remove_highest_card(triplets);
                 if (next_triplets) {
                     return make_value(Rank::FullHouse, triplets, next_triplets, 1);
                 } else {
@@ -101,12 +110,19 @@ namespace poker {
                 }
             }
         } else if (pairs) {
-            uint64_t next_pairs = remove_highest_count_index(pairs);
+            uint64_t next_pairs = remove_highest_card(pairs);
             if (next_pairs) {
                 return add_major_card(make_value(Rank::TwoPair, pairs, remove_cards(count_indices, pairs), 1),
                         next_pairs);
             } else {
                 return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
+            }
+        }
+
+        for (int i = 0; i < 4; ++i) {
+            uint64_t flush = hand & FlushMask * (1 << i); 
+            if (count_cards(flush) >= 5) {
+                return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
             }
         }
 
