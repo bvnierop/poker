@@ -52,14 +52,14 @@ namespace poker {
         return (1ull << to_integral(rank)) << RankOffset; 
     }
 
-    inline __fastcall BitValue set_major_card(BitValue value, uint64_t filtered_hand) {
+    inline __fastcall BitValue add_major_card(BitValue value, uint64_t filtered_hand) {
         return value | (1ull << ((msb_index(filtered_hand) >> 2) - 1)) << MajorCardOffset;
     }
 
     inline __fastcall BitValue make_value(Rank rank, uint64_t filtered_hand, uint64_t kicker_base, int num_kickers)
     {
             BitValue value = make_rank(rank);
-            value = set_major_card(value, filtered_hand);
+            value = add_major_card(value, filtered_hand);
             value = add_kickers(value, kicker_base, num_kickers);
             return value;
     }
@@ -96,7 +96,14 @@ namespace poker {
                 }
             }
         } else if (pairs) {
-            return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
+            uint64_t next_pairs = remove_cards(pairs, 1ull << msb_index(pairs));
+            if (next_pairs) {
+                uint64_t value = make_value(Rank::TwoPair, pairs, remove_cards(count_indices, pairs), 1);
+                value = add_major_card(value, next_pairs);
+                return value;
+            } else {
+                return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
+            }
         }
 
         return 0;

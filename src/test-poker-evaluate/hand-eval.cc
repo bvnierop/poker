@@ -20,6 +20,22 @@ void ExpectHand(const std::string &handString,
     }
 }
 
+void ExpectHand(const std::string &handString,
+        Rank expectedRank,
+        const std::vector<FaceValue> &expectedMajors,
+        const std::vector<FaceValue> &expectedMinors)
+{
+    BitHand hand = parse_hand(handString);
+    BitValue value = evaluate_hand(hand);
+    Expect(rank(value) == expectedRank);
+    for (size_t i = 0; i < expectedMajors.size(); ++i) {
+        Expect(major_card(value, i) == expectedMajors[i]);
+    }
+    for (size_t i = 0; i < expectedMinors.size(); ++i) {
+        Expect(minor_card(value, i) == expectedMinors[i]);
+    }
+}
+
 Describe("hand eval") {
     It("detects a four of a kind") {
         ExpectHand("Kh Kc Kd Ks Ac 2h 7c", Rank::FourOfAKind,
@@ -47,6 +63,12 @@ Describe("hand eval") {
     It("detects a double three of a kind full house") {
         ExpectHand("Kh Kc Kd Qs Qc Qh 7c", Rank::FullHouse,
                 FaceValue::King, { FaceValue::Queen });
+    }
+
+    It("detects two pair") {
+        ExpectHand("Kh Kc 2d Qs Qc 5h 7c", Rank::TwoPair,
+                { FaceValue::King, FaceValue::Queen },
+                { FaceValue::Seven });
     }
 }
 
