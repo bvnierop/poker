@@ -114,5 +114,10 @@ Describe("hand eval") {
         ExpectHand("Ah 2c 3d 4s 5h Ac Ad", Rank::Straight,
                 FaceValue::Five, {});
     }
+
+    It("detects a straight flush") {
+        ExpectHand("Kh Qh Jh Th 9h 7c 2d", Rank::StraightFlush,
+                FaceValue::King, {});
+    }
 }
 

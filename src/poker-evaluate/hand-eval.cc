@@ -95,6 +95,19 @@ namespace poker {
     static constexpr uint64_t FlushMask = 0x1111111111111110ull;
     static constexpr uint64_t StraightMask = 0x11111000000000ull;
 
+    inline __fastcall BitValue get_straight_value(uint64_t mask, Rank straight_rank = Rank::Straight)
+    {
+        uint64_t suitless_cards = collapse_hand(mask);
+        for (int i = 0; i < 10; ++i) {
+            uint64_t mask = StraightMask >> (i * 4);
+            uint64_t straight = suitless_cards & mask;
+            if (straight == mask) {
+                return make_value(straight_rank, straight, straight, 0);
+            }
+        }
+        return 0;
+    }
+
     BitValue evaluate_hand(BitHand hand)
     {
         uint64_t count_indices = create_count_indices(hand);
@@ -107,17 +120,18 @@ namespace poker {
         for (int i = 0; i < 4; ++i) {
             uint64_t flush = hand & FlushMask * (1 << i); 
             if (count_cards(flush) >= 5) {
-                return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
+                BitValue straight_value = get_straight_value(flush, Rank::StraightFlush);
+                if (straight_value) {
+                    return straight_value;
+                } else {
+                    return make_value(Rank::Flush, flush, remove_highest_card(flush), 4);
+                }
             }
         }
 
-        uint64_t suitless_cards = collapse_hand(hand);
-        for (int i = 0; i < 10; ++i) {
-            uint64_t mask = StraightMask >> (i * 4);
-            uint64_t straight = suitless_cards & mask;
-            if (straight == mask) {
-                return make_value(Rank::Straight, straight, straight, 0);
-            }
+        BitValue straight_value = get_straight_value(hand);
+        if (straight_value) {
+            return straight_value;
         }
 
         uint64_t triplets = count_indices & TripletMask;
