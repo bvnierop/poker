@@ -69,6 +69,11 @@ namespace poker {
         return base & ~to_remove;
     }
 
+    inline __fastcall uint64_t remove_highest_count_index(uint64_t count_indices)
+    {
+        return remove_cards(count_indices, 1ull << msb_index(count_indices));
+    }
+
     static constexpr uint64_t QuadMask = 0x8888888888888888ull;
     static constexpr uint64_t TripletMask = 0x4444444444444444ull;
     static constexpr uint64_t PairMask = 0x2222222222222222ull;
@@ -88,7 +93,7 @@ namespace poker {
             if (pairs) {
                 return make_value(Rank::FullHouse, triplets, pairs, 1);
             } else {
-                uint64_t next_triplets = remove_cards(triplets, 1ull << msb_index(triplets));
+                uint64_t next_triplets = remove_highest_count_index(triplets);
                 if (next_triplets) {
                     return make_value(Rank::FullHouse, triplets, next_triplets, 1);
                 } else {
@@ -96,11 +101,10 @@ namespace poker {
                 }
             }
         } else if (pairs) {
-            uint64_t next_pairs = remove_cards(pairs, 1ull << msb_index(pairs));
+            uint64_t next_pairs = remove_highest_count_index(pairs);
             if (next_pairs) {
-                uint64_t value = make_value(Rank::TwoPair, pairs, remove_cards(count_indices, pairs), 1);
-                value = add_major_card(value, next_pairs);
-                return value;
+                return add_major_card(make_value(Rank::TwoPair, pairs, remove_cards(count_indices, pairs), 1),
+                        next_pairs);
             } else {
                 return make_value(Rank::OnePair, pairs, remove_cards(count_indices, pairs), 3);
             }
