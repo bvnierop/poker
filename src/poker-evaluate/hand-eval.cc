@@ -81,10 +81,10 @@ namespace poker {
         return ((card_mask + (card_mask >> 4) & 0x0F0F0F0F0F0F0F0Full) * 0x0101010101010101ull) >> 56;
     }
 
-    static constexpr uint64_t QuadMask = 0x8888888888888888ull;
-    static constexpr uint64_t TripletMask = 0x4444444444444444ull;
-    static constexpr uint64_t PairMask = 0x2222222222222222ull;
     // note the trailing 0. We zero out the low bits of aces here. 
+    static constexpr uint64_t QuadMask = 0x8888888888888880ull;
+    static constexpr uint64_t TripletMask = 0x4444444444444440ull;
+    static constexpr uint64_t PairMask = 0x2222222222222220ull;
     static constexpr uint64_t FlushMask = 0x1111111111111110ull;
 
     BitValue evaluate_hand(BitHand hand)

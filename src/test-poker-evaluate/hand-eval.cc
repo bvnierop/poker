@@ -71,6 +71,12 @@ Describe("hand eval") {
                 { FaceValue::Seven });
     }
 
+    It("detects one pair, when it's a pair of aces") {
+        ExpectHand("Ah Ac 5d Qs Kc 2h 7c", Rank::OnePair,
+                FaceValue::Ace,
+                { FaceValue::King, FaceValue::Queen, FaceValue::Seven });
+    }
+
     It("detects a flush") {
         ExpectHand("Ah Kh 9h 8h 5h 3s 2s", Rank::Flush,
             FaceValue::Ace,
