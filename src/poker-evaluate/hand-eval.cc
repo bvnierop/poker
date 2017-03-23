@@ -157,7 +157,7 @@ namespace poker {
             }
         }
 
-        return 0;
+        return make_value(Rank::HighCard, hand, remove_highest_card(hand), 4);
     }
 
 }

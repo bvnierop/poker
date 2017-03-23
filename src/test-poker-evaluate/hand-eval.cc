@@ -119,5 +119,11 @@ Describe("hand eval") {
         ExpectHand("Kh Qh Jh Th 9h 7c 2d", Rank::StraightFlush,
                 FaceValue::King, {});
     }
+
+    It("recognizes a high card") {
+        ExpectHand("Ah Qc Td 8s 6h 4c 2d", Rank::HighCard,
+                FaceValue::Ace,
+                { FaceValue::Queen, FaceValue::Ten, FaceValue::Eight, FaceValue::Six });
+    }
 }
 
