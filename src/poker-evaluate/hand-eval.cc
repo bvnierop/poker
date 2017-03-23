@@ -7,14 +7,6 @@
 #include "hand-value.h"
 
 namespace poker {
-    // TODO: move
-    void print_bits(uint64_t bits) {
-        for (int i = 63; i >= 0; --i) {
-            std::cout << ((bits & (1ull << i)) >> i);
-            if (!(i%4)) std::cout << " ";
-        }
-        std::cout << std::endl;
-    }
 
     inline __fastcall uint64_t create_count_indices(BitHand hand)
     {

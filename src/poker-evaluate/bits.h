@@ -2,6 +2,7 @@
 #define _BITS_H_
 
 #include <cstdint>
+#include <string>
 
 namespace poker {
 
@@ -18,6 +19,8 @@ namespace poker {
         asm("bsf %1, %0" : "=r" (position) : "r" (number));
         return position;
     }
+
+    std::string make_bit_string(uint64_t bits);
 
 }
 
