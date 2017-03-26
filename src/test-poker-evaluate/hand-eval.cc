@@ -1,10 +1,6 @@
 #include "../third-party/catch.hpp"
 #include "catch-rspec.hpp"
-#include "../poker-evaluate/hand-eval.h"
-#include "../poker-evaluate/hand-parse.h"
-#include "../poker-evaluate/hand-value.h"
-#include "../poker-evaluate/hand-iterate.h"
-#include "../poker-evaluate/bits.h"
+#include "../poker-evaluate/poker-evaluate.h"
 
 #include <set>
 #include <map>
