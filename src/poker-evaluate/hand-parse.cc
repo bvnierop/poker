@@ -78,13 +78,10 @@ namespace poker {
 
         uint64_t suit = suits[(int)description[1] - 'A'];
         uint64_t value = values[(int)description[0] - '0'];
-        bool is_ace = value == to_integral(FaceValue::Ace);
-        uint64_t ace_mask = 1 << suit;
 
         uint64_t card = (1ull << suit) <<
             (value << 2);
 
-        // Conditionally set ace_mask, when is_ace is true.
-        return (card & ~ace_mask) | (-is_ace & ace_mask);
+        return card;
     }
 }

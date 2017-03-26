@@ -102,6 +102,7 @@ namespace poker {
 
     BitValue evaluate_hand(BitHand hand)
     {
+        hand = hand | (hand >> (to_integral(FaceValue::Ace) * 4));
         uint64_t count_indices = create_count_indices(hand);
 
         uint64_t quads = count_indices & QuadMask;
