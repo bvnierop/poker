@@ -6,7 +6,7 @@
 @set CXX=clang-cl
 @md %target%
 @cd %target%
-@cmake -G "Ninja" -DUNITY_BUILD=OFF -DCMAKE_BUILD_TYPE=Debug ..
+@cmake -G "Ninja" -DUNITY_BUILD=OFF -DCMAKE_BUILD_TYPE=Release ..
 @cd ..
 
 @set CC=%b_CC%

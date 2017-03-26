@@ -2,17 +2,19 @@
 #define _HAND_EVAL_H_
 
 #include <string>
+#include <functional>
+#include <map>
+#include <unordered_map>
 
 #include "types.h"
 #include "bits.h"
 
+
 namespace poker 
 {
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Function declarations
-    ///////////////////////////////////////////////////////////////////////////
     BitValue evaluate_hand(BitHand hand);
+    BitValue evaluate_hand_fast(BitHand hand);
+    void iterate_hands(int max_cards, std::function<void(BitHand)>);
 }
 
 #endif

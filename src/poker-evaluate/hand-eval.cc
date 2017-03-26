@@ -1,9 +1,4 @@
 #include "hand-eval.h"
-
-#include <vector>
-#include <string>
-#include <iostream>
-
 #include "hand-value.h"
 
 namespace poker {
@@ -102,7 +97,6 @@ namespace poker {
 
     BitValue evaluate_hand(BitHand hand)
     {
-        hand = hand | (hand >> (to_integral(FaceValue::Ace) * 4));
         uint64_t count_indices = create_count_indices(hand);
 
         uint64_t quads = count_indices & QuadMask;
@@ -113,7 +107,8 @@ namespace poker {
         for (int i = 0; i < 4; ++i) {
             uint64_t flush = hand & FlushMask * (1 << i); 
             if (count_cards(flush) >= 5) {
-                BitValue straight_value = get_straight_value(flush, Rank::StraightFlush);
+                BitValue straight_value = get_straight_value(flush | (flush >> (to_integral(FaceValue::Ace) * 4)),
+                        Rank::StraightFlush);
                 if (straight_value) {
                     return straight_value;
                 } else {
@@ -122,7 +117,7 @@ namespace poker {
             }
         }
 
-        BitValue straight_value = get_straight_value(hand);
+        BitValue straight_value = get_straight_value(hand | (hand >> to_integral(FaceValue::Ace) * 4));
         if (straight_value) {
             return straight_value;
         }
@@ -153,5 +148,21 @@ namespace poker {
         return make_value(Rank::HighCard, hand, remove_highest_card(hand), 4);
     }
 
+    void iterate_hands_recursively(int max_cards, int num_cards, int last_bit, uint64_t cur, std::function<void(BitHand)> fn) 
+    {
+        if (num_cards == max_cards) {
+            fn(cur << 4);
+            return;
+        }
+
+        for (int bit = last_bit + 1; bit < 52; ++bit) {
+            iterate_hands_recursively(max_cards, num_cards + 1, bit, cur | (1ull << bit), fn);
+        }
+    }
+
+    void iterate_hands(int max_cards, std::function<void(BitHand)> fn)
+    {
+        iterate_hands_recursively(max_cards, 0, -1, 0, fn);
+    }
 }
 
