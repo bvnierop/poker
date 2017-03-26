@@ -21,7 +21,7 @@ namespace poker {
     }
 
     std::string make_bit_string(uint64_t bits);
-
+    void stream_bit_string(uint64_t bits, std::ostream &stream);
 }
 
 #endif // _BITS_H_

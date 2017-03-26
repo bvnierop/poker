@@ -17,4 +17,9 @@ namespace poker {
         }
         return ss.str();;
     }
+
+    void stream_bit_string(uint64_t bits, std::ostream &stream) 
+    {
+        stream << make_bit_string(bits);
+    }
 }
