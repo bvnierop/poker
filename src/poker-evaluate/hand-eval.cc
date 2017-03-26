@@ -148,21 +148,5 @@ namespace poker {
         return make_value(Rank::HighCard, hand, remove_highest_card(hand), 4);
     }
 
-    void iterate_hands_recursively(int max_cards, int num_cards, int last_bit, uint64_t cur, std::function<void(BitHand)> fn) 
-    {
-        if (num_cards == max_cards) {
-            fn(cur << 4);
-            return;
-        }
-
-        for (int bit = last_bit + 1; bit < 52; ++bit) {
-            iterate_hands_recursively(max_cards, num_cards + 1, bit, cur | (1ull << bit), fn);
-        }
-    }
-
-    void iterate_hands(int max_cards, std::function<void(BitHand)> fn)
-    {
-        iterate_hands_recursively(max_cards, 0, -1, 0, fn);
-    }
 }
 

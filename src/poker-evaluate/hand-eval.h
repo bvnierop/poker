@@ -14,7 +14,6 @@ namespace poker
 {
     BitValue evaluate_hand(BitHand hand);
     BitValue evaluate_hand_fast(BitHand hand);
-    void iterate_hands(int max_cards, std::function<void(BitHand)>);
 }
 
 #endif

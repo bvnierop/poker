@@ -3,10 +3,12 @@
 #include "../poker-evaluate/hand-eval.h"
 #include "../poker-evaluate/hand-parse.h"
 #include "../poker-evaluate/hand-value.h"
+#include "../poker-evaluate/hand-iterate.h"
 #include "../poker-evaluate/bits.h"
 
 #include <set>
 #include <map>
+#include <iostream>
 
 using namespace poker;
 
@@ -204,12 +206,3 @@ Describe("hand eval") {
     }
 }
 
-Describe("hand iterator") {
-    It("iterates all 5-card hands") {
-        uint64_t count = 0;
-        iterate_hands(5, [&count](BitHand) {
-            count++;
-        });
-        Expect(count == 2598960);
-    }
-}

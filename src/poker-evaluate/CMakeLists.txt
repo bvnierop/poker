@@ -3,6 +3,7 @@ SET(sources
     hand-eval.cc
     hand-parse.cc
     hand-value.cc
+    hand-iterate.cc
     bits.cc
 )
 
